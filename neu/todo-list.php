@@ -12,15 +12,19 @@ header("Content-Type: application/json");
 switch ($_SERVER["REQUEST_METHOD"] ) {
 case "GET":
 //Get Todo's (READ)
+.write_log("READ", null);
 break;
 case "POST":
 //Add Todo (CREATE)
+write_log("CREATE", null);
 break;
 case "PUT":
 //Change Todo (UPDATE)
+write_log("PUT", null);
 break;
 case "DELETE":
 //Remove Todo (DELETE)
+write_log("DELETE", null);
 break;
 }
 ?> 
