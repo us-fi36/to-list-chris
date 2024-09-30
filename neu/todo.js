@@ -13,7 +13,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('todo-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const todoInput = document.getElementById('todo-input').value;
+        const todoInput = document.getElementById('todo-input').value.trim(); // Entfernt überflüssige Leerzeichen
+        if (todoInput === '') {
+            console.log('Leere Einträge werden ver­wor­fen.');
+            return; // Verhindert das Senden der leeren Anfrage
+        }
+        // Wenn das Eingabefeld nicht leer ist, wird der To-Do Eintrag hinzugefügt
         fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -28,6 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
             li.textContent = data.title;
             todoList.appendChild(li);
         });
+    });
     })
-})
 
