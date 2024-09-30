@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const apiUrl = 'todo-list.php';
+    const todoList = document.getElementById('todo-list'); // Global definiert, damit es auch außerhalb verfügbar ist
+
+    // Laden der bestehenden To-Do-Einträge
     fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
-        const todoList = document.getElementById('todo-list');
         data.forEach(item => {
             const li = document.createElement('li');
             li.textContent = item.title;
@@ -11,13 +13,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Event-Listener für das Absenden des Formulars
     document.getElementById('todo-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const todoInput = document.getElementById('todo-input').value.trim(); // Entfernt überflüssige Leerzeichen
         if (todoInput === '') {
-            console.log('Leere Einträge werden ver­wor­fen.');
+            console.log('Leere Einträge werden verworfen.');
             return; // Verhindert das Senden der leeren Anfrage
         }
+else
         // Wenn das Eingabefeld nicht leer ist, wird der To-Do Eintrag hinzugefügt
         fetch(apiUrl, {
             method: 'POST',
@@ -28,11 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            const todoList = document.getElementById('todo-list');
             const li = document.createElement('li');
             li.textContent = data.title;
             todoList.appendChild(li);
         });
     });
-    })
 
+    // Event-Listener für das Durchstreichen und Löschen von Einträgen
+    todoList.addEventListener('click', function(e) {
+        // Überprüfen, ob der Klick auf ein Listenelement erfolgte
+        if (e.target.tagName === 'LI') {
+            e.target.classList.toggle('completed'); // Toggle des Durchstreichens
+        }
+    });
+});

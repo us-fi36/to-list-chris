@@ -21,6 +21,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // Event-Listener für das Hinzufügen neuer Einträge
 todoForm.addEventListener('submit', function(e) {
     e.preventDefault(); // Verhindert das automatische Neuladen der Seite
+     e.preventDefault();
+        const todoInput = document.getElementById('todoInput').value.trim(); // Entfernt überflüssige Leerzeichen
+        if (todoInput === '') {
+            console.log('Leere Einträge werden ver­wor­fen.');
+            return; // Verhindert das Senden der leeren Anfrage
+        }
 
     // Erstellen eines neuen Listeneintrags
     const li = document.createElement('li');
