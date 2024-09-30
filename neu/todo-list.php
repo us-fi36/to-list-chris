@@ -2,7 +2,6 @@
 
 header("Content-Type: application/json");
 
-// LOG function in PHP
 function write_log($action, $data) {
     $log = fopen('log.txt', 'a');
     $timestamp = date('Y-m-d H:i:s');
@@ -10,23 +9,33 @@ function write_log($action, $data) {
     fclose($log);
 }
 
+$file = 'todo.json';
+$todos = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
-        // Get Todo's (READ)
         write_log("READ", null);
+        echo json_encode($todos);
         break;
+        
     case "POST":
-        // Add Todo (CREATE)
-        write_log("CREATE", null);
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (isset($input['title'])) {
+            $todos[] = $input;
+            file_put_contents($file, json_encode($todos));
+            write_log("CREATE", $input);
+            echo json_encode(["message" => "ToDos hinzugefügt."]);
+        } else {
+            echo json_encode(["error" => "Fehlerhafte Eingabe."]);
+        }
         break;
+        
     case "PUT":
-        // Change Todo (UPDATE)
         write_log("PUT", null);
         break;
+        
     case "DELETE":
-        // Remove Todo (DELETE)
         write_log("DELETE", null);
         break;
 }
-
 ?>
