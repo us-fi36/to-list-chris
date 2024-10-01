@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             todoList.appendChild(li);
         });
 
-        //Löschen
+//Löschen
 const delButton = document.createElement('button');
 delButton.textContent = 'Löschen';
 
@@ -27,7 +27,7 @@ delButton.addEventListener('click', function() {
 .then(response => response.json())
 .then(() => {
     li.remove();
-    });
+});
 });
     });
 
