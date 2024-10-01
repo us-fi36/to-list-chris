@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
         data.forEach(item => {
             const li = document.createElement('li');
-            li.textContent = item.title;
-            todoList.appendChild(li);
-        });
 
 //Löschen
 const delButton = document.createElement('button');
@@ -18,18 +15,24 @@ delButton.textContent = 'Löschen';
 
 delButton.addEventListener('click', function() {
     fetch(apiUrl, {
-    method: 'DELITE',
+    method: 'DELETE',
     headers: {
-        'Content-Type': 'applicaton/json'
+        'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ id: todo.id })
+    body: JSON.stringify({ id: item.id })
 })
 .then(response => response.json())
 .then(() => {
     li.remove();
-});
-});
     });
+});
+
+li.textContent = item.title;
+            li.appendChild(delButton);  // Button hinzufügen
+            todoList.appendChild(li);  // `li` hinzufügen, nachdem Text und Button gesetzt sind
+        });
+    });
+
 
     // Event-Listener für das Absenden des Formulars
     document.getElementById('todo-form').addEventListener('submit', function(e) {
@@ -39,7 +42,6 @@ delButton.addEventListener('click', function() {
             console.log('Leere Einträge werden verworfen.');
             return; // Verhindert das Senden der leeren Anfrage
         }
-else
         // Wenn das Eingabefeld nicht leer ist, wird der To-Do Eintrag hinzugefügt
         fetch(apiUrl, {
             method: 'POST',
