@@ -13,6 +13,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+//Löschen
+const delButton = document.createElement('button');
+delButton.textContent = 'Löschen';
+
+delButton.addEventListener('click', function() {
+    fetch(apiUrl, {
+    method: 'DELITE',
+    headers: {
+        'Content-Type': 'applicaton/json'
+    },
+    body: JSON.stringify({ id: todo.id })
+})
+.then(response => response.json())
+.then(() => {
+    li.remove();
+    });
+});
+
     // Event-Listener für das Absenden des Formulars
     document.getElementById('todo-form').addEventListener('submit', function(e) {
         e.preventDefault();

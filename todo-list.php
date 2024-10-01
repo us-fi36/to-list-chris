@@ -24,7 +24,17 @@ case 'PUT':
 // Placeholder for updating a TODO
 break;
 case 'DELETE':
-// Placeholder for deleting a TODO
+// Remove Todo (DELETE)
+$data = json_decode(file_get_contents('php://input'), true);
+// Filter Todo to delete from the list.
+$todo_items = array_filter($todo_items, function($todo) use ($data) {
+return $todo['id' ] !== $data['id'];
+});
+// Write the Todos back to JSON file.
+file_put_contents('todos.json', json_encode($todo_items));
+// Tell the client the success of the operation.
+echo json_encode( ['status' => 'success' ]);
+write_log("DELETE", $data);
 break;
 }
 
