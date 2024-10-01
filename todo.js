@@ -11,9 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
             li.textContent = item.title;
             todoList.appendChild(li);
         });
-    });
 
-//Löschen
+        //Löschen
 const delButton = document.createElement('button');
 delButton.textContent = 'Löschen';
 
@@ -30,6 +29,7 @@ delButton.addEventListener('click', function() {
     li.remove();
     });
 });
+    });
 
     // Event-Listener für das Absenden des Formulars
     document.getElementById('todo-form').addEventListener('submit', function(e) {
