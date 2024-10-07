@@ -1,48 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const apiUrl = 'todo-list.php';
-    const todoList = document.getElementById('todo-list'); // Global definiert, damit es auch außerhalb verfügbar ist
-
-    // Laden der bestehenden To-Do-Einträge
-    fetch(apiUrl)
-    .then(response => response.json())
-    .then(data => {
-        data.forEach(item => {
-            const li = document.createElement('li');
-
-//Löschen
-const delButton = document.createElement('button');
-delButton.textContent = 'Löschen';
-
-delButton.addEventListener('click', function() {
-    fetch(apiUrl, {
-    method: 'DELETE',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id: item.id })
-})
-.then(response => response.json())
-.then(() => {
-    li.remove();
-    });
-});
-
-li.textContent = item.title;
-            li.appendChild(delButton);  // Button hinzufügen
-            todoList.appendChild(li);  // `li` hinzufügen, nachdem Text und Button gesetzt sind
-        });
-    });
-
+    const todoList = document.getElementById('todo-list');
 
     // Event-Listener für das Absenden des Formulars
     document.getElementById('todo-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const todoInput = document.getElementById('todo-input').value.trim(); // Entfernt überflüssige Leerzeichen
+        const todoInput = document.getElementById('todo-input').value.trim();
+        
         if (todoInput === '') {
             console.log('Leere Einträge werden verworfen.');
             return; // Verhindert das Senden der leeren Anfrage
         }
-        // Wenn das Eingabefeld nicht leer ist, wird der To-Do Eintrag hinzugefügt
+
         fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -50,19 +19,46 @@ li.textContent = item.title;
             },
             body: JSON.stringify({ title: todoInput })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Netzwerkantwort war nicht ok');
+            }
+            return response.json();
+        })
         .then(data => {
             const li = document.createElement('li');
             li.textContent = data.title;
-            todoList.appendChild(li);
-        });
-    });
+            li.dataset.id = data.id; // ID speichern
 
-    // Event-Listener für das Durchstreichen und Löschen von Einträgen
-    todoList.addEventListener('click', function(e) {
-        // Überprüfen, ob der Klick auf ein Listenelement erfolgte
-        if (e.target.tagName === 'LI') {
-            e.target.classList.toggle('completed'); // Toggle des Durchstreichens
-        }
+            // Löschen-Button hinzufügen
+            const delButton = document.createElement('button');
+            delButton.textContent = 'Löschen';
+            delButton.addEventListener('click', function() {
+                const todoId = li.dataset.id; // ID vom Listenelement abrufen
+                fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: todoId }) // Verwende die ID
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Löschen');
+                    }
+                    li.remove(); // Entfernt den Listeneintrag
+                })
+                .catch(error => {
+                    console.error('Fehler beim Löschen:', error);
+                });
+            });
+
+            li.appendChild(delButton);  // Button hinzufügen
+            todoList.appendChild(li);
+            document.getElementById('todo-input').value = ''; // Eingabefeld leeren
+        })
+        .catch(error => {
+            console.error('Fehler beim Hinzufügen:', error);
+        });
     });
 });

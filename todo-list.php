@@ -1,40 +1,47 @@
 <?php
 header('Content-Type: application/json');
 $todo_file = 'todo.json';
+
+// Überprüfen, ob die Datei existiert, andernfalls initialisieren
+if (!file_exists($todo_file)) {
+    file_put_contents($todo_file, json_encode([]));
+}
+
 $todo_items = json_decode(file_get_contents($todo_file), true);
 
 switch ($_SERVER['REQUEST_METHOD']) {
 case 'GET':
     echo json_encode($todo_items);
     write_log("READ", $todo_items);
-break;
+    break;
+
 case 'POST':
-// Get data from the input stream.
-$data = json_decode(file_get_contents('php://input'), true);
-// Create new todo item.
-$new_todo = ["id" => uniqid(), "title" => $data['title']];
-// Add new item to our todo item list.
-$todo_items[] = $new_todo;
-// Write todo items to JSON file.
-file_put_contents($todo_file, json_encode($todo_items));
-// Return the new item.
-echo json_encode($new_todo);
-break;
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    if (isset($data['title'])) {
+        $new_todo = ["id" => uniqid(), "title" => $data['title']];
+        $todo_items[] = $new_todo;
+        file_put_contents($todo_file, json_encode($todo_items));
+        echo json_encode($new_todo);
+    } else {
+        echo json_encode(['error' => 'Title is required']);
+        exit;
+    }
+    break;
+
 case 'PUT':
-// Placeholder for updating a TODO
-break;
+    // Placeholder für das Aktualisieren eines TODO
+    break;
+
 case 'DELETE':
     $data = json_decode(file_get_contents('php://input'), true);
-    // Filter Todo to delete from the list.
     $todo_items = array_filter($todo_items, function($todo) use ($data) {
         return $todo['id'] !== $data['id'];
     });
-    // Write the Todos back to JSON file.
-    file_put_contents('todo.json', json_encode($todo_items));
-    // Tell the client the success of the operation.
+    file_put_contents($todo_file, json_encode($todo_items));
     echo json_encode(['status' => 'success']);
     write_log("DELETE", $data);
-break;
+    break;
 }
 
 // LOG function in PHP
